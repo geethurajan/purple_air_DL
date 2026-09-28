@@ -1,0 +1,51 @@
+Progress Logs
+-------------
+Sensors With Data in Time Range: 1
+Sensors Without Data in Time Range: 0
+
+Sensors Not Found: 0
+Invalid Sensor Indexes: 0
+Sensor Indexes Encountering Other Errors: 0
+Sensor Indexes Not Processed: 0
+
+Start Timestamp: 2025-01-01T00:00:00-08:00
+End Timestamp: 2025-03-01T00:00:00-08:00
+Average: 60
+Fields: humidity,temperature,pressure,pm2.5_atm,pm2.5_cf_1
+Total Data Rows Downloaded: 542
+
+Number of Sensors: 1
+Number of Read Keys: 0
+
+Download Started at: 2026-06-26T13:31:06-04:00
+Download Ended   at: 2026-06-26T13:31:09-04:00
+Download Took: 3 seconds
+
+-------------
+Sensor Indexes Not Found:
+
+
+Invalid Sensor Indexes:
+
+
+Sensors Without Any Data For Specified Time Period:
+
+
+Sensors Where No Download Was Attempted Yet Due to Process Being Aborted:
+
+
+Aborted on Sensors:
+
+
+Sensors With Number of Downloaded Data Rows:
+184183 : 542 data rows
+  
+
+-------------
+Starting requests for sensor 184183.
+Making request 1 from 2025-01-01 to 2025-03-01
+Data download completed for sensor 184183. Downloaded 542 rows of data.
+
+
+Download request has been completed. Scroll down for a summary:
+--------------------------------------
