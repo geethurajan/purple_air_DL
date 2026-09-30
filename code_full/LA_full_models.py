@@ -96,7 +96,6 @@ for _, meta_row in sensors_df.iterrows():
     folder = os.path.join(BASE_DIR, f'OG Sensor ({int(sensor_num)})')
 
 
-
     if not os.path.isdir(folder):
         completeness_records.append({
             'sensor_num': int(sensor_num), 'sensor_id': sensor_id,

@@ -88,6 +88,8 @@ epa["datetime"] = pd.to_datetime(
     epa["Date Local"] + " " + epa["Time Local"]
 )
 
+
+
 epa = epa.rename(
     columns={
         "Sample Measurement": "EPA_PM"
@@ -140,6 +142,7 @@ for file in tqdm(SENSOR_FILES):
     sensor_id = sensor_id.replace("sensor_", "")
     sensor_id = sensor_id.replace("_history.csv", "")
 
+
     try:
         df = pd.read_csv(file)
     except:
@@ -147,7 +150,7 @@ for file in tqdm(SENSOR_FILES):
         continue
 
     required_columns = [
-        "timestamp",
+        "time_stamp",
         "pm2.5_cf_1",
         "temperature",
         "humidity",
@@ -156,18 +159,21 @@ for file in tqdm(SENSOR_FILES):
 
     if not all(col in df.columns for col in required_columns):
         print(f"Missing columns in {file}")
+
         continue
+
+
 
     df = df[required_columns].copy()
 
     df["sensor_id"] = sensor_id
 
-    df["timestamp"] = pd.to_datetime(
-        df["timestamp"],
+    df["time_stamp"] = pd.to_datetime(
+        df["time_stamp"],
         utc=True
     )
 
-    df = df.sort_values("timestamp")
+    df = df.sort_values("time_stamp")
 
     df["temperature_lag1"] = df["temperature"].shift(1)
     df["humidity_lag1"] = df["humidity"].shift(1)
@@ -203,6 +209,8 @@ purpleair = purpleair.dropna(
     subset=["sensor_lat", "sensor_lon"]
 )
 
+purpleair = purpleair.rename(columns={"time_stamp": "timestamp"})
+
 
 # ============================================================
 # Prepare EPA timestamps
@@ -212,10 +220,12 @@ epa["datetime"] = pd.to_datetime(
     epa["datetime"]
 )
 
+
+
 if epa["datetime"].dt.tz is None:
     epa["timestamp"] = (
         epa["datetime"]
-        .dt.tz_localize("America/Los_Angeles")
+        .dt.tz_localize("America/Los_Angeles", nonexistent="shift_forward")
         .dt.tz_convert("UTC")
     )
 else:
@@ -224,7 +234,9 @@ else:
         .dt.tz_convert("UTC")
     )
 
+
 epa = epa.drop(columns=["datetime"])
+
 
 
 # ============================================================
@@ -232,6 +244,8 @@ epa = epa.drop(columns=["datetime"])
 # ============================================================
 
 print("\nMerging EPA and PurpleAir observations...")
+
+
 
 merged = purpleair.merge(
     epa,
