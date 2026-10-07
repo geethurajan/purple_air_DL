@@ -1,0 +1,7 @@
+numpy
+pandas==2.3.3
+matplotlib
+scikit-learn
+torch
+tqdm
+statsmodels
