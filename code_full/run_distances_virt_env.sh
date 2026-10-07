@@ -36,7 +36,7 @@ DISTANCES=(2.5 3 5 7 9 11 13)
 EPOCHS=150
 DATA_DIR="${DATA_DIR:-$PWD}"          # folder with the sensor CSVs
 OUT_DIR="${OUT_DIR:-results_by_distance}"
-SCRIPT="${SCRIPT:-final_presentation_distance.py}"
+SCRIPT="${SCRIPT:-hpc_performance_by_distance.py}"
 
 mkdir -p logs "$OUT_DIR"
 
