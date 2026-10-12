@@ -1,0 +1,42 @@
+Multi-Angle Imager for Aerosols 
+
+Q. What is MAIA?
+
+NASA’s Multi-Angle Imager for Aerosols (MAIA) investigation will seek to understand how different types of air pollution affect human health.
+
+
+How to download the data from their website
+
+
+make a NASA Earthdata account  https://urs.earthdata.nasa.gov/users/new
+search MAIA
+Click the dataset title (e.g. "Ancillary total PM data from the MAIA Surface Monitor Network").
+Set Temporal dates.
+Funnel icon (Filter Granules), Granule ID(s) = *USA-LosAngeles* (stars needed).
+Download All, then Direct Download, then Download Data, then log in with EDL.
+Click links in Download Files tab to save each .nc.
+
+
+
+
+Code method (everything at once), in VS Code terminal
+ 
+Download the code (download_maia_la) to the folder. Open the terminal and install the package
+
+pip install earthaccess netCDF4 pandas xarray
+python download_maia_la.py --products total --start 2025-01-01 --end 2025-03-31 --list-only
+python download_maia_la.py --products total --start 2025-01-01 --end 2025-03-31
+Downloaded the files. Now need to covert to csv
+
+Save maia_to_csv.py into your MAIA folder, the same way you saved the download script.
+
+pip install netCDF4 pandas
+python maia_to_csv.py maia_la_data\total --out maia_total_2025Q1.csv
+python download_maia_la.py --products species --start 2025-01-01 --end 2025-03-31
+python maia_to_csv.py maia_la_data\species --out maia_species_2025Q1.csv
+ 
+This will give the csc with one observation per day. but to get the hourly data
+
+
+download maia_to_csv_hourly.py
+python maia_to_csv_hourly.py maia_la_data\total --start 2025-01-01 --end 2025-03-31 --hourly --out maia_2025Q1.csv
