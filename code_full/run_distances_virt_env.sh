@@ -22,14 +22,6 @@
 #$ -e logs/
 #$ -q long
 
-# ---- SLURM -------------------------------------------------------
-#SBATCH --job-name=pa_distance
-#SBATCH --array=1-7
-#SBATCH --cpus-per-task=1
-#SBATCH --mem=4G
-#SBATCH --time=00:30:00
-#SBATCH --output=logs/pa_distance_%A_%a.out
-#SBATCH --error=logs/pa_distance_%A_%a.err
 
 DISTANCES=(2.5 3 5 7 9 11 13)
 

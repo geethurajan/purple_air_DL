@@ -14,7 +14,7 @@
 # ---- SGE / UGE ---------------------------------------------------
 #$ -N pa_distance
 #$ -t 1-7
-#$ -pe smp 4
+#$ -pe smp 1
 #$ -cwd
 #$ -o logs/
 #$ -e logs/
@@ -23,18 +23,18 @@
 # ---- SLURM -------------------------------------------------------
 #SBATCH --job-name=pa_distance
 #SBATCH --array=1-7
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=16G
-#SBATCH --time=24:00:00
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=2G
+#SBATCH --time=00:30:00
 #SBATCH --output=logs/pa_distance_%A_%a.out
 #SBATCH --error=logs/pa_distance_%A_%a.err
 
-DISTANCES=(3 5 10 15 20 30 50)        # 50 km covers every sensor
+DISTANCES=(2.5 3 5 7 9 11 13)        # 50 km covers every sensor
 
 EPOCHS=150
 DATA_DIR="${DATA_DIR:-$PWD}"          # folder with the sensor CSVs
 OUT_DIR="${OUT_DIR:-results_by_distance}"
-SCRIPT="${SCRIPT:-final_presentation_distance.py}"
+SCRIPT="${SCRIPT:-hpc_performance_by_distance.py}"
 
 mkdir -p logs "$OUT_DIR"
 
