@@ -19,11 +19,9 @@ hpc_two_stage_by_distance_days_AB.py:
 
     reg_lin_model: the same linear regression without the log transform
 
-    MLP: two-stage model (Model 2, f with t-1 weather), f and g are MLPs trained for a fixed
-    number of epochs (default 150)
+    MLP: two-stage model, f and g are MLPs trained for a fixed number of epochs (default 150)
         log EPA PM2.5(t) = f( log PA PM2.5(t), PA press(t), PA temp(t), PA hum(t),
-                              lat, lon, distance,
-                              PA press(t-1), PA temp(t-1), PA hum(t-1), g_hat(t-1) )
+                              lat, lon, distance, g_hat(t-1) )
         g_hat(t-1)       = g( log PA PM2.5(t-1), PA press(t-1), PA temp(t-1), PA hum(t-1),
                               lat, lon, distance )
         g estimates log EPA PM2.5 from the PurpleAir readings of the same hour. It is trained
@@ -57,8 +55,8 @@ Folders (run from inside jan2026_test, which sits inside the training data folde
 Test sensor files are read from --test-dir only (the files in --train-dir are the 2025 ones).
 
 Usage:
-    python hpc_two_stage_jan2026_test_f_lag.py --distance 7
-    python hpc_two_stage_jan2026_test_f_lag.py --distance 7 --train-dir .. --test-dir . --out-dir results
+    python hpc_two_stage_jan2026_test.py --distance 7
+    python hpc_two_stage_jan2026_test.py --distance 7 --train-dir .. --test-dir . --out-dir results
 """
 
 import os
@@ -98,7 +96,7 @@ parser.add_argument("--train-dir", default="..",
 parser.add_argument("--test-dir", default=".",
                     help="Folder with LA_Site_1103_Jan2026.csv, Sensors_with_coordinates.csv "
                          "and sensor_*_history.csv (January 2026 test data)")
-parser.add_argument("--out-dir", default="results_jan2026_test_f_lag",
+parser.add_argument("--out-dir", default="results_jan2026_test",
                     help="Folder for output files")
 parser.add_argument("--seed", type=int, default=42)
 
@@ -242,15 +240,9 @@ G_LAG_COLUMNS = [
     "sensor_lon"
 ]
 
-# PurpleAir weather readings one hour earlier, also given to f (Model 2)
-F_LAG_COLUMNS = [
-    "temperature_lag1",
-    "humidity_lag1",
-    "pressure_lag1"
-]
-
-# MLP f: the hour-t inputs, the t-1 weather readings and g's estimate for t-1
-F_COLUMNS = G_COLUMNS + F_LAG_COLUMNS + ["g_hat_lag1"]
+# MLP f: the hour-t inputs plus g's estimate for t-1
+F_COLUMNS = G_COLUMNS + ["g_hat_lag1"]
+print(len(F_COLUMNS))
 
 MODEL_COLUMNS = list(dict.fromkeys(
     ["sensor_id", "timestamp", TARGET_COLUMN, RAW_TARGET_COLUMN]
@@ -749,7 +741,7 @@ def run_mlp_two_stage(g_train_df, train_df, test_df):
 
     def f_inputs(d):
         g_hat = mlp_predict(g_scaler, g_model, values(d, G_LAG_COLUMNS))   # g applied to the t-1 readings
-        return np.column_stack([values(d, G_COLUMNS + F_LAG_COLUMNS), g_hat]).astype(np.float32)
+        return np.column_stack([values(d, G_COLUMNS), g_hat]).astype(np.float32)
 
     # f: hour-t readings + g_hat(t-1) -> log EPA PM2.5 at hour t.
     # Cross-fitting: g_hat(t-1) on f's training rows comes from a g that did not see the day of
@@ -771,7 +763,7 @@ def run_mlp_two_stage(g_train_df, train_df, test_df):
             rows = f_fold == k
             g_hat_train[rows] = mlp_predict(scaler_k, model_k, values(train_df[rows], G_LAG_COLUMNS))
 
-        X_f_train = np.column_stack([values(train_df, G_COLUMNS + F_LAG_COLUMNS), g_hat_train]).astype(np.float32)
+        X_f_train = np.column_stack([values(train_df, G_COLUMNS), g_hat_train]).astype(np.float32)
     else:
         X_f_train = f_inputs(train_df)
 
@@ -868,7 +860,7 @@ results["MLP g only Test"] = scores(
 )
 
 print("\n==========================================")
-print(f"MLP two-stage model, Model 2 (f with t-1 weather) ({DIST_LABEL}, {EPOCHS} epochs, hidden layers {ARCH_LABEL}, "
+print(f"MLP two-stage model ({DIST_LABEL}, {EPOCHS} epochs, hidden layers {ARCH_LABEL}, "
       f"cross-fitting folds {CROSSFIT_FOLDS})")
 print("==========================================")
 print_scores("train", results["MLP Train"])
@@ -908,7 +900,7 @@ print("\n")
 print(summary_df.T.to_string(header=False))
 
 summary_df.to_csv(
-    os.path.join(args.out_dir, f"Jan2026Test_F_Lag_Summary_{DIST_LABEL}.csv"),
+    os.path.join(args.out_dir, f"Jan2026Test_Summary_{DIST_LABEL}.csv"),
     index=False
 )
 
@@ -929,7 +921,7 @@ sensor_table["rows used"] = [
 ]
 
 sensor_table.to_csv(
-    os.path.join(args.out_dir, f"Jan2026Test_F_Lag_Sensors_{DIST_LABEL}.csv"),
+    os.path.join(args.out_dir, f"Jan2026Test_Sensors_{DIST_LABEL}.csv"),
     index=False
 )
 
@@ -942,7 +934,7 @@ predictions["mlp_pred"] = mlp["test_pred"]
 predictions["mlp_g_only_pred"] = mlp["g_test_pred"]
 
 predictions.to_csv(
-    os.path.join(args.out_dir, f"Jan2026Test_F_Lag_Test_Predictions_{DIST_LABEL}.csv"),
+    os.path.join(args.out_dir, f"Jan2026Test_Test_Predictions_{DIST_LABEL}.csv"),
     index=False
 )
 

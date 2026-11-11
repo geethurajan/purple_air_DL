@@ -87,7 +87,7 @@ parser.add_argument("--epochs", type=int, default=150,
                     help="MLP training epochs (fixed, no search)")
 parser.add_argument("--hidden", default="16,32,16",
                     help="Neurons in each hidden layer of g and f")
-parser.add_argument("--crossfit-folds", type=int, default=2,
+parser.add_argument("--crossfit-folds", type=int, default=1,
                     help="Day groups for cross-fitting g_hat(t-1) on f's training rows "
                          "(1 = no cross-fitting, the old behavior)")
 parser.add_argument("--train-dir", default="..",
