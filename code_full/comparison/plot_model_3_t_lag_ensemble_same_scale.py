@@ -50,6 +50,15 @@ RESULTS_DIR = args.results_dir
 
 DISTANCES = [2.5, 3.5, 5, 7, 9, 11, 13, 15]
 
+# Same color for the same model in every plot file (single-model and side-by-side plots)
+COLORS = {
+    "log_trans_lin_model": "tab:blue",
+    "reg_lin_model": "tab:orange",
+    "MLP": "tab:green",
+    "MLP_no_g": "tab:green",
+    "MLP_g": "tab:red",
+}
+
 # Model key in the Summary files -> label on the plot
 MODELS = {
     "reg_lin_model": "reg_lin_model (raw fit, scored on log1p)",
@@ -108,7 +117,8 @@ for suffix, y_label, title, plot_file in PLOTS:
         if suffix == "Adj R2":
             label = f"{label}, p = {P[model]}"
 
-        plt.plot(results["Distance km"], results[f"{model} Test {suffix}"], marker="o", label=label)
+        plt.plot(results["Distance km"], results[f"{model} Test {suffix}"], marker="o",
+                 color=COLORS[model], label=label)
 
     # Number of test sensors at each distance, just above the x-axis
     ymin, ymax = plt.ylim()
